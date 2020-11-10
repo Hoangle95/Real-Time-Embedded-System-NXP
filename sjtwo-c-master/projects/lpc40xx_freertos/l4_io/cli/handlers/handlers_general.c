@@ -1,10 +1,12 @@
-#include "cli_handlers.h"
-
 #include "FreeRTOS.h"
+#include "cli_handlers.h"
 #include "task.h"
+#include <stdio.h>
 
+//  ----------------------------- Task List Print ----------------------------
 static void cli__task_list_print(sl_string_t user_input_minus_command_name, app_cli__print_string_function cli_output);
 
+//-------------------------------- Crash Me --------------------------------
 app_cli_status_e cli__crash_me(app_cli__argument_t argument, sl_string_t user_input_minus_command_name,
                                app_cli__print_string_function cli_output) {
   uint32_t *bad_pointer = (uint32_t *)0x00000001;
@@ -12,6 +14,7 @@ app_cli_status_e cli__crash_me(app_cli__argument_t argument, sl_string_t user_in
   return APP_CLI_STATUS__SUCCESS;
 }
 
+//-------------------------------- Task List -------------------------------
 app_cli_status_e cli__task_list(app_cli__argument_t argument, sl_string_t user_input_minus_command_name,
                                 app_cli__print_string_function cli_output) {
   const int sleep_time = sl_string__to_int(user_input_minus_command_name);
@@ -27,6 +30,7 @@ app_cli_status_e cli__task_list(app_cli__argument_t argument, sl_string_t user_i
   return APP_CLI_STATUS__SUCCESS;
 }
 
+//--------------------------------------------------------------------------
 static void cli__task_list_print(sl_string_t output_string, app_cli__print_string_function cli_output) {
   void *unused_cli_param = NULL;
 
@@ -71,4 +75,72 @@ static void cli__task_list_print(sl_string_t output_string, app_cli__print_strin
   cli_output(unused_cli_param, "Unable to provide you the task information along with their CPU and stack usage.\n");
   cli_output(unused_cli_param, "configUSE_TRACE_FACILITY macro at FreeRTOSConfig.h must be non-zero\n");
 #endif
+}
+
+/* ----------------------------------------------------------------------------------------------------- */
+/*                          My Task Handler                                                                */
+/* ------------------------------------------------------------------------------------------------------- */
+app_cli_status_e cli__hoang_handler(app_cli__argument_t argument, sl_string_t user_input_minus_command_name,
+                                    app_cli__print_string_function cli_output) {
+  // sl_string is a powerful string library, and you can utilize the sl_string.h API to parse parameters of a command
+
+  // Sample code to output data back to the CLI
+  // sl_string_t s = user_input_minus_command_name; // Re-use a string to save memory
+  // sl_string__printf(s, "Hello back to the CLI\n");
+  // cli_output(NULL, s);
+  // Type ( taskcontrol suspend led) to suspend or resume
+  /* ------------------------------- EXPLANATION ------------------------------ */
+  /*******************************************************************************
+   *     If the user types 'taskcontrol suspend led0'
+   *     --> then we need to suspend a task with the name of 'led0'
+   *     In this case, the user_input_minus_command_name will be set to 'suspend led0'
+   *     --> with the command-name is removed
+   ********************************************************************************/
+
+  /* --------------------------- STRING MANIPULATION -------------------------- */
+  /*******************************************************************************
+   *   we cannot use 'sl_string__printf("Failed to find %s", s);
+   *   --->because that would print existing string onto
+   *   ---> Use: cli_output(NULL, s); to printout object
+   *   In this case, try to query the tasks with the name 'led0'
+   *   ---> Use: bool sl_string__erase_first_word(sl_string_t string, char word_separater)
+   *   ->OR Use: char name[16]; sl_string__scanf("%*s %16s", name);
+   *********************************************************************************/
+  sl_string_t s = user_input_minus_command_name;
+
+  if (sl_string__begins_with_ignore_case(s, "suspend")) {
+
+    // cli_output(NULL, s);  //print out the s => (suspend led)
+    // remove "suspend", s from "suspend led" become "led"
+    (void)sl_string__erase_first_word(s, ' ');
+    TaskHandle_t task_handle = xTaskGetHandle(s); // send "led" to task_handle
+
+    // cli_output(NULL, s);
+    if (NULL == task_handle) {
+      sl_string__insert_at(s, 0, "Could not find a task with name:");
+      cli_output(NULL, s);
+    } else {
+      vTaskSuspend(task_handle); // Suspend the task
+      printf("Suspend the task\n");
+      cli_output(NULL, s);
+    }
+
+  } else if (sl_string__begins_with_ignore_case(s, "resume")) {
+
+    (void)sl_string__erase_first_word(s, ' '); // remove the resume word
+    TaskHandle_t task_handle = xTaskGetHandle(s);
+    if (NULL == task_handle) {
+      sl_string__insert_at(s, 0, "Could not find a task with name:");
+      cli_output(NULL, s);
+    } else {
+      vTaskResume(task_handle); // resume task
+      printf("Rusume the task\n");
+      cli_output(NULL, s);
+    }
+
+  } else {
+    cli_output(NULL, "Did you mean to say suspend or resume?\n");
+  }
+
+  return APP_CLI_STATUS__SUCCESS;
 }

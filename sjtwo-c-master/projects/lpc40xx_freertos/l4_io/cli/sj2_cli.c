@@ -33,11 +33,18 @@ void sj2_cli__init(void) {
                                              "Outputs list of RTOS tasks, CPU and stack usage.\n"
                                              "tasklist <time>' will display CPU utilization within this time window.",
                                          .app_cli_handler = cli__task_list};
+  /* Hoang handler cli_handlers.h */
+  /* -------------------------------------------------------------------------- */
+  static app_cli__command_s hoang = {.command_name = "taskcontrol",
+                                     .help_message_for_command = "Suspend or Resume <Task Name>",
+                                     .app_cli_handler = cli__hoang_handler};
+  /* -------------------------------------------------------------------------- */
 
   // Add your CLI commands in descending sorted order
   app_cli__add_command_handler(&sj2_cli_struct, &task_list);
   app_cli__add_command_handler(&sj2_cli_struct, &i2c);
   app_cli__add_command_handler(&sj2_cli_struct, &crash);
+  app_cli__add_command_handler(&sj2_cli_struct, &hoang);
 
   // In case other tasks are hogging the CPU, it would be useful to run the CLI
   // at high priority to at least be able to see what is going on

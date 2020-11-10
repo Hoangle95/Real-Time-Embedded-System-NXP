@@ -17,10 +17,13 @@ typedef enum {
   ADC__CHANNEL_5 = 5, // Pin Available on SJ2
 } adc_channel_e;
 
+/* Setup Control Reg + Read from Global Data Register */
 void adc__initialize(void);
-
-/**
- * Reads the given ADC channal and returns its digital value
- * This starts conversion of one channel, and should not be used from multiple tasks
- */
+/* Setup Control Reg + Read from Global Data Register (Software Mode) */
 uint16_t adc__get_adc_value(adc_channel_e channel_num);
+
+// Enable Analog Mode + ADC function for I/O Pin P0_25 */
+void pin_configure_adc_channel_as_io_pin();
+
+/* Enable Burst Mode (Hardware Mode)  */
+void adc__enable_burst_mode(adc_channel_e channel_num);

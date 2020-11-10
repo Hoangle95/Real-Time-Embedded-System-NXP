@@ -2,10 +2,11 @@
 #include <stdio.h>
 
 #include "crash.h"
+#include "delay.h"
 #include "freertos_interrupt_handlers.h"
 #include "function_types.h"
+#include "gpio_lab.h"
 #include "lpc40xx.h"
-
 /**
  * _estack symbol is actually a pointer to the start of the stack memory (provided by the linker script).
  * Declaring as unsigned int to inform compiler that this symbol is constant and defined at link time.
@@ -30,6 +31,22 @@ static void isr_hard_fault(void);
  * Alternative is to use '__attribute__((used))' attribute prior to isr_hard_fault_handler()
  */
 void isr_hard_fault_handler(unsigned long *hardfault_args);
+
+//======================================================================================//
+//                           Part_0_LAB Interrupt and Binary Semaphore                  //
+// Goal : Press switch 0 to start blink the LED from left to Right
+//======================================================================================//
+
+// void gpio_interrupt(void) {
+//   // a) Use fprintf(stderr) or blink and LED here to test your ISR
+//   GPIO__set_high(1, 26);
+//   delay__ms(100);
+//   GPIO__set_low(1, 26);
+//   delay__ms(100);
+//   fprintf(stderr, "Interruptttttttt\n");
+//   // b) Clear Port0/2 interrupt using CLR0 or CLR2 registers
+//   LPC_GPIOINT->IO0IntClr |= (1 << 29); // switch off, clear interrupt
+// }
 
 __attribute__((section(".interrupt_vector_table"))) const function__void_f interrupt_vector_table[] = {
     /**
@@ -94,6 +111,7 @@ __attribute__((section(".interrupt_vector_table"))) const function__void_f inter
     lpc_peripheral__interrupt_dispatcher, // 52 SSP 2
     lpc_peripheral__interrupt_dispatcher, // 53 LCD
     lpc_peripheral__interrupt_dispatcher, // 54 GPIO Interrupt
+    // gpio_interrupt,
     lpc_peripheral__interrupt_dispatcher, // 55 PWM 0
     lpc_peripheral__interrupt_dispatcher, // 56 EEPROM
 };
