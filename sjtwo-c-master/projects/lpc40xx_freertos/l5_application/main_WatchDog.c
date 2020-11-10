@@ -325,20 +325,20 @@ void Watchdog_task(void *P) {
     }
   }
 }
-int main(void) {
+// int main(void) {
 
-  //----------------------------- Initialization -----------------------------
-  puts("Starting RTOS\n");
-  sj2_cli__init();
+//   //----------------------------- Initialization -----------------------------
+//   puts("Starting RTOS\n");
+//   sj2_cli__init();
 
-  //--------------------------- Written to SD card ---------------------------
-  sensor_queue = xQueueCreate(1, sizeof(double));
-  WatchDog = xEventGroupCreate();
-  xTaskCreate(producer_task, "producer", 2048 / sizeof(void *), NULL, PRIORITY_MEDIUM, NULL);
-  xTaskCreate(consumer_task, "consumer", 2048 / sizeof(void *), NULL, PRIORITY_MEDIUM, NULL);
-  xTaskCreate(Watchdog_task, "Watchdog", 2048 / sizeof(void *), NULL, PRIORITY_HIGH, NULL);
+//   //--------------------------- Written to SD card ---------------------------
+//   sensor_queue = xQueueCreate(1, sizeof(double));
+//   WatchDog = xEventGroupCreate();
+//   xTaskCreate(producer_task, "producer", 2048 / sizeof(void *), NULL, PRIORITY_MEDIUM, NULL);
+//   xTaskCreate(consumer_task, "consumer", 2048 / sizeof(void *), NULL, PRIORITY_MEDIUM, NULL);
+//   xTaskCreate(Watchdog_task, "Watchdog", 2048 / sizeof(void *), NULL, PRIORITY_HIGH, NULL);
 
-  vTaskStartScheduler(); // This function never returns unless RTOS scheduler runs out of memory and fails
+//   vTaskStartScheduler(); // This function never returns unless RTOS scheduler runs out of memory and fails
 
-  return 0;
-}
+//   return 0;
+// }

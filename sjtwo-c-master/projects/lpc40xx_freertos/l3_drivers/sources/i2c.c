@@ -8,6 +8,9 @@
 #include "lpc40xx.h"
 #include "lpc_peripherals.h"
 
+#include "i2c_slave.h"
+#include <stdio.h>
+
 /// Set to non-zero to enable debugging, and then you can use I2C__DEBUG_PRINTF()
 #define I2C__ENABLE_DEBUGGING 0
 
@@ -44,6 +47,11 @@ typedef struct {
   uint8_t *input_byte_pointer;        ///< Used for reading I2C slave device
   const uint8_t *output_byte_pointer; ///< Used for writing data to the I2C slave device
   size_t number_of_bytes_to_transfer;
+
+  /* -------------------------------- Hoang Code ------------------------------- */
+  /* Slave  Mode */
+  bool FirstByte_afterSLA;     // First Byte condition
+  uint8_t Slave_memoryAddress; // also Data byte
 } i2c_s;
 
 /// Instances of structs for each I2C peripheral
@@ -274,6 +282,19 @@ static bool i2c__handle_state_machine(i2c_s *i2c) {
     I2C__STATE_MR_SLAVE_READ_NACK = 0x48,
     I2C__STATE_MR_SLAVE_ACK_SENT = 0x50,
     I2C__STATE_MR_SLAVE_NACK_SENT = 0x58,
+
+    /* -------------------------------- Hoang Code ------------------------------- */
+    /* Slave Receive States (SR) */
+    I2C__STATE_SR_SLAVE_READ_ACK = 0x60,
+    I2C__STATE_SR_SLAVE_ACK_SENT = 0x80,
+    I2C__STATE_SR_SLAVE_NACK_SENT = 0xA0,
+
+    /* Slave Transmitter States (ST) */
+    I2C__STATE_ST_SLAVE_READ_ACK = 0xA8,
+    I2C__STATE_ST_SLAVE_READ_NACK = 0xB8,
+    I2C__STATE_ST_SLAVE_ACK_SENT = 0xC8,
+    I2C__STATE_ST_SLAVE_NACK_SENT = 0xC0,
+
   };
 
   bool stop_sent = false;
@@ -380,6 +401,64 @@ static bool i2c__handle_state_machine(i2c_s *i2c) {
     // We should not issue stop() in this condition, but we still need to end our  transaction.
     stop_sent = true;
     i2c->error_code = lpc_i2c->STAT;
+    break;
+
+  /* -------------------------------- Bang Code ------------------------------- */
+  /* -------------------------------------------------------------------------- */
+
+  /* |S|SLA + W|A| */
+  case I2C__STATE_SR_SLAVE_READ_ACK: // 0x60
+    i2c->FirstByte_afterSLA = true;
+    i2c__set_ack_flag(lpc_i2c);
+    i2c__clear_si_flag_for_hw_to_take_next_action(lpc_i2c);
+    break;
+
+  /* |S|SLA+W|A|Data|A| */
+  case I2C__STATE_SR_SLAVE_ACK_SENT: // 0x80
+    if (i2c->FirstByte_afterSLA) {
+      i2c->Slave_memoryAddress = lpc_i2c->DAT;
+      i2c->FirstByte_afterSLA = false;
+    } else {
+      if (i2c_slave_receive__write_memory(i2c->Slave_memoryAddress++, lpc_i2c->DAT)) {
+
+      } else {
+        printf("STATE 0x80 error\n");
+      }
+    }
+    i2c__clear_si_flag_for_hw_to_take_next_action(lpc_i2c);
+    break;
+
+  /* (STO | STA) SENT */
+  case I2C__STATE_SR_SLAVE_NACK_SENT: // 0xA0 (STO | STA)
+    i2c__clear_si_flag_for_hw_to_take_next_action(lpc_i2c);
+    break;
+
+  /* |S|SLA + R|A| */
+  case I2C__STATE_ST_SLAVE_READ_ACK: // 0xA8
+    if (i2c_slave_transmit__read_memory(i2c->Slave_memoryAddress++, &lpc_i2c->DAT)) {
+
+    } else {
+      printf("STATE 0xA8 error\n");
+    }
+    i2c__clear_si_flag_for_hw_to_take_next_action(lpc_i2c);
+    break;
+
+  /* |S|SLA+R|A|Data|A| */
+  case I2C__STATE_ST_SLAVE_READ_NACK: // 0xB8
+    if (i2c_slave_transmit__read_memory(i2c->Slave_memoryAddress++, &lpc_i2c->DAT)) {
+
+    } else {
+      printf("STATE 0xB8 error\n");
+    }
+    i2c__clear_si_flag_for_hw_to_take_next_action(lpc_i2c);
+    break;
+
+  /* Data transmit --> NACK return */
+  case I2C__STATE_ST_SLAVE_NACK_SENT: // Nack -> 0xC0
+    i2c__clear_si_flag_for_hw_to_take_next_action(lpc_i2c);
+  /* Last Byte sent*/
+  case I2C__STATE_ST_SLAVE_ACK_SENT: // LastByte -> 0xC8
+    i2c__clear_si_flag_for_hw_to_take_next_action(lpc_i2c);
     break;
 
   case I2C__STATE_MT_SLAVE_ADDR_NACK: // no break
