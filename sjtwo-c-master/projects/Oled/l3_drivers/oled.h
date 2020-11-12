@@ -1,3 +1,5 @@
+#pragma once
+
 #include "lpc40xx.h"
 #include "lpc_peripherals.h"
 #include <stdint.h>
@@ -7,48 +9,64 @@
 #include "gpio_lab.h"
 #include <string.h>
 
+typedef enum {
+  page_0,
+  page_1,
+  page_2,
+  page_3,
+  page_4,
+  page_5,
+  page_6,
+  page_7,
+} page_address;
+
+typedef enum {
+  not_init,
+  init,
+} multiple_line;
+
 /* -------------------------------------------------------------------------- */
 /* ------------------------- Declaration + Power on ------------------------- */
 
-/* Oled Pixel for single Page (8)H x (128)W*/
+// Oled Pixel for single Page (8)H x (128)W
 uint8_t bitmap_[8][128];
 
-/* Output [P1_22] ( ON<--(LOW)|(HIGH) -->OFF ) */
+// Output [P1_22] ( ON<--(LOW)|(HIGH) -->OFF )
 void oled_CS();
 void oled_DS();
 
-/* SSP1_I/O Function PIN P0_7 | P0_9 | P1_25 */
+// SSP1_I/O Function PIN P0_7 | P0_9 | P1_25
 void config_oled_pin();
 
-/* Command Buss P1_25(LOW) | Data Buss P1_25(HIGH) */
+// Command Buss P1_25(LOW) | Data Buss P1_25(HIGH)
 void oled_setC_bus();
 void oled_setD_bus();
 
 /* -------------------------------------------------------------------------- */
 /* ------------------------ Initialization + Testing ------------------------ */
 
-/* SPI_oled Initial */
+// SPI_oled Initial
 void SPI_oled_initialization();
 
-/* Oled (SPI1) Transfer Byte  */
+// Oled (SPI1) Transfer Byte
 void oled__transfer_byte(uint8_t data_transfer);
 
-/* Initialize the Sequence of OP-CODE for OLED */
+// Initialize the Sequence of OP-CODE for OLED
 void panel_init();
 
-/* Test <-> Turn LCD ON  --> Print ("CMPE") */
+// Test <-> Turn LCD ON  --> Print ("CMPE")
 void turn_on_lcd();
 
 /* -------------------------------------------------------------------------- */
 /* ----------------------- Clear + Fill Update Screen ----------------------- */
 
-/* Set Bit Map with 0x00  */
+// Set Bit Map with 0x00
 void oled_clear();
 
-/* Set Bit Map with 0xFF  */
+// Set Bit Map with 0xFF
 void oled_fill();
 
-/* Update BitMap to Oled */
+// Update BitMap to Oled
 void oled_update();
 
 /* -------------------------------------------------------------------------- */
@@ -63,27 +81,29 @@ void vertical_addr_mode();
 // Page Address Mode
 void page_addr_mode();
 
-// Scrolling Address Mode
-void scrolling_addr_mode();
-/**/
-void oled_display(char *message);
+// Horizontal Scrolling in given page range
+void scrolling_addr_mode(page_address start_page, page_address stop_page);
+
+// Display String in specific line
+void new_line(uint8_t line_address);
+
+// Print line
+void oled_print(char *message, uint8_t pages_num, multiple_line init_or_not);
 
 /* -------------------------------------------------------------------------- */
 /* --------------------------- LOOK UP char Array --------------------------- */
 
-/* Call Back Array for char */
+// Call Back Array for char
 typedef void (*function_pointer_char)(void);
 
-/*
- * Casting to get the ASCII value of the char
- * ---> Assign ASCII value to index of Call Back Array
- */
+// Casting to get the ASCII value of the char
+// ---> Assign ASCII value to index of Call Back Array
 void char_array_table();
 
-/* Use Lookup Table to search char and Display */
+// Use Lookup Table to search char and Display
 void display_char(char *string);
 
-/* ----------------------------- Covert to Pixel ---------------------------- */
+// ----------------------------- Covert to Pixel ----------------------------
 void char_A();
 void char_B();
 void char_C();

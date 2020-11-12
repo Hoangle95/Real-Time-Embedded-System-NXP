@@ -31,7 +31,7 @@ int main(void) {
 
   puts("Starting RTOS\n");
   // turn_on_lcd();
-  oled_print("Hoang");
+  oled_display("Hoang");
 
   while (1) {
   }

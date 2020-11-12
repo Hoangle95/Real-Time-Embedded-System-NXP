@@ -1,5 +1,5 @@
 #include "oled.h"
-#include "clock.h"
+#include "gpio.h"
 
 //======================================================================================//
 //                                PIN CONFIGURATION                                     //
@@ -16,10 +16,6 @@ void oled_DS() {
   GPIO__set_high(1, 22);
 }
 
-// Command Buss P1_25(LOW) | Data Buss P1_25(HIGH)
-void oled_setC_bus() { GPIO__set_low(1, 25); }
-void oled_setD_bus() { GPIO__set_high(1, 25); }
-
 // SSP1_I/O Function PIN P0_7 | P0_9 | P1_25
 void config_oled_pin() {
   gpio__construct_with_function(0, 7, GPIO__FUNCTION_2);
@@ -29,6 +25,10 @@ void config_oled_pin() {
   gpio__construct_with_function(1, 25, GPIO__FUNCITON_0_IO_PIN);
   GPIO__set_as_output(1, 25);
 }
+
+// Command Buss P1_25(LOW) | Data Buss P1_25(HIGH)
+void oled_setC_bus() { GPIO__set_low(1, 25); }
+void oled_setD_bus() { GPIO__set_high(1, 25); }
 
 //======================================================================================//
 //                                Initialization + Testing                              //
@@ -49,9 +49,11 @@ void SPI_oled_initialization() {
   const uint32_t CPU_CLK = clock__get_core_clock_hz(); // 96-MHz
   for (uint8_t divider = 2; divider <= 254; divider += 2) {
     if ((CPU_CLK / divider) <= SSP1_clock_mhz) {
+      // fprintf(stderr, "LCD_CLK: %d \n", divider);
       break;
     }
-    LPC_SSP1->CPSR = divider; // Setup PreScale Control[7:0]
+    /* Setup PreScale Control[7:0] */
+    LPC_SSP1->CPSR = divider;
   }
 }
 
@@ -63,14 +65,14 @@ void SPI_oled_initialization() {
 //@return: Return 8-bits
 //======================================================================================//
 void oled__transfer_byte(uint8_t data_transfer) {
+  /* 16-Bits Data Register [15:0] */
+  LPC_SSP1->DR = data_transfer;
 
-  LPC_SSP1->DR = data_transfer; // 16-Bits Data Register [15:0]
-
-  // Status Register-BUSY[4]
+  /* Status Register-BUSY[4] */
   while (LPC_SSP1->SR & (1 << 4)) {
-    ; // Wait while it is busy(1), else(0) BREAK */
+    ; /* Wait while it is busy(1), else(0) BREAK */
   }
-  // No need to Read Data Back from MISO
+  /*No need to Read Data Back from MISO */
 }
 
 //======================================================================================//
@@ -83,60 +85,59 @@ void oled__transfer_byte(uint8_t data_transfer) {
 void panel_init() {
 
   oled_setC_bus();
+  /*  Turn off panel  */
+  oled__transfer_byte(0xAE);
 
-  oled__transfer_byte(0xAE); // Turn off pane
-
-  //  set display clock divide ratio and ratio value
+  /*  set display clock divide ratio and ratio value  */
   oled__transfer_byte(0xD5); // OP-Code
   oled__transfer_byte(0x80);
 
-  //  set multiplex ratio and value
+  /*  set multiplex ratio and value  */
   oled__transfer_byte(0xA8); // OP-Code
   oled__transfer_byte(0x3F);
 
-  //  Set display offset = 0
+  /*  Set display offset = 0  */
   oled__transfer_byte(0xD3); // OP-Code
   oled__transfer_byte(0x00);
 
-  //  Display start line
+  /*  Display start line  */
   oled__transfer_byte(0x40); // OP-Code
 
-  //  charge pump enable
+  /*  charge pump enable  */
   oled__transfer_byte(0x8D); // OP-Code
   oled__transfer_byte(0x14);
 
   /*  Set segment remap 128 to 0  */
   oled__transfer_byte(0xA1);
 
-  //  Set COM output Scan direction 64 to 0
+  /*  Set COM output Scan direction 64 to 0  */
   oled__transfer_byte(0xC8); // OP-Code
 
-  //  Set pin hardware config
+  /*  Set pin hardware config  */
   oled__transfer_byte(0xDA); // OP-Code
   oled__transfer_byte(0x12);
 
-  //  Contrast control register
+  /*  Contrast control register  */
   oled__transfer_byte(0x81); // OP-Code
   oled__transfer_byte(0xCF);
 
-  //  Set pre-charge period
+  /*  Set pre-charge period  */
   oled__transfer_byte(0xD9); // OP-Code
   oled__transfer_byte(0xF1);
 
-  //  Set Vcomh
+  /*  Set Vcomh  */
   oled__transfer_byte(0xDB); // OP-Code
   oled__transfer_byte(0x40);
 
   // horizontal_addr_mode();
-  // scrolling_addr_mode();
 
-  //  Enable entire display
+  /*  Enable entire display  */
   oled__transfer_byte(0xA4); // OP-Code
 
-  //  Set display to normal colors
+  /*  Set display to normal colors  */
   oled__transfer_byte(0xA6); // OP-Code
 
-  // Set display On
+  /*  Set display On  */
   oled__transfer_byte(0xAF); // OP-Code
 }
 
@@ -163,6 +164,7 @@ void turn_on_lcd() {
   oled_update();
 
   /* Print ("CMPE") */
+  new_line(0);
   char_C();
   char_M();
   char_P();
@@ -185,7 +187,7 @@ void oled_clear() {
     }
   }
 }
-// --------------------------------------------------------------------------
+// -------------------------------------------------------------------------- */
 
 void oled_fill() {
   for (int row = 0; row < 8; row++) {
@@ -195,12 +197,10 @@ void oled_fill() {
   }
 }
 
-// --------------------------------------------------------------------------
+// -------------------------------------------------------------------------- */
 void oled_update() {
-  // horizontal_addr_mode();
+  horizontal_addr_mode();
   // vertical_addr_mode();
-  page_addr_mode();
-  // scrolling_addr_mode();
   for (int row = 0; row < 8; row++) {
     for (int column = 0; column < 128; column++) {
       oled_setD_bus();
@@ -229,25 +229,27 @@ void horizontal_addr_mode() {
 
   /*  Set page address  */
   oled__transfer_byte(0x22); // Set page addr
-  oled__transfer_byte(0x00); // start at page 0
-  oled__transfer_byte(0x07); // end at page 7
+  oled__transfer_byte(0x00); // Start at page 0
+  oled__transfer_byte(0x07); // End at page 7
 }
 
 void vertical_addr_mode() {
+
   oled_setC_bus();
-  // oled__transfer_byte(0xAE); //Screen OFF
-  oled__transfer_byte(0x20);
-  oled__transfer_byte(0x01);
-  // oled__transfer_byte(0xA4); //Resume frome Ram
-  // oled__transfer_byte(0xAF); //Screen ON
+  /*  Set address mode  */
 
-  oled__transfer_byte(0x21);
-  oled__transfer_byte(0x00);
-  oled__transfer_byte(0x7F);
+  oled__transfer_byte(0x20); // Address mode
+  oled__transfer_byte(0x01); // Vertical
 
-  oled__transfer_byte(0x22);
-  oled__transfer_byte(0x00);
-  oled__transfer_byte(0x07);
+  /*  Set column mode  */
+  oled__transfer_byte(0x21); // Column start and end addr
+  oled__transfer_byte(0x00); // Start at zero
+  oled__transfer_byte(0x7F); // End at 127 (7F)
+
+  /*  Set page address  */
+  oled__transfer_byte(0x22); // Set page addr
+  oled__transfer_byte(0x00); // Start at page 0
+  oled__transfer_byte(0x07); // End at page 7
 }
 
 void page_addr_mode() {
@@ -264,51 +266,106 @@ void page_addr_mode() {
   oled__transfer_byte(0x17);
 }
 
-void scrolling_addr_mode() {
+void scrolling_addr_mode(page_address start_page, page_address stop_page) {
   oled_CS();
   {
     oled_setC_bus();
 
-    oled__transfer_byte(0x26); // Right Horizontal Scroll
-    oled__transfer_byte(0x00); // dummy byte
-    oled__transfer_byte(0x00); // start Page 0
-    oled__transfer_byte(0x07); // 2 frames
-    oled__transfer_byte(0x07); // end Page 7
-    oled__transfer_byte(0x00); // dummy byte 00
-    oled__transfer_byte(0xFF); // dummy byte FF
-    oled__transfer_byte(0x2F); // activate scrolling
+    oled__transfer_byte(0x26);              // Right Horizontal Scroll
+    oled__transfer_byte(0x00);              // dummy byte
+    oled__transfer_byte(0x00 | start_page); // Start at page 0
+    oled__transfer_byte(0x05);              // 2 frame speed
+    oled__transfer_byte(0x00 | stop_page);  // End at page 7
+    oled__transfer_byte(0x00);              // dummy byte
+    oled__transfer_byte(0xFF);              // dummy byte
+    oled__transfer_byte(0x2F);              // Activate scrolling, 2E : Deactivate
   }
   oled_DS();
+}
+
+/*================================= New Line =================================
+*@brief:  Display String In Specific Line ( Pages Addressing Mode )
+*@Note:   Please Check The Datasheet Pages37
+          * Require command_bus (ON)
+          * Page Address range [0xB0 -- 0xB7]
+          * ONE colum = EIGHT seg
+          *
+_________________________________________________________
+|Colum0|Colum1|Colum2|Colum3|Colum4|Colum5|Colum6|Colum7|
+---------------------------------------------------------
+|8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg | --> Page0
+|8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg | --> Page1
+|8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg | --> Page2
+|8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg | --> Page3
+|8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg | --> Page4
+|8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg | --> Page5
+|8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg | --> Page6
+|8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg |8-seg | --> Page7
+==============================================================================*/
+// add parameter cho new line
+void new_line(uint8_t line_address) {
+  oled_setC_bus();
+  /* Page Add [0xB0-0xB7] */
+  oled__transfer_byte(0xB0 | line_address);
+  /*************************
+   * Pages Addressing mode
+   * --> Set Colum + SEG <--
+   *************************/
+  uint8_t start_SEG = 0x00;
+  uint8_t start_COLUM = 0x10;
+  oled__transfer_byte(start_SEG);
+  oled__transfer_byte(start_COLUM);
+
+  oled_setD_bus();
 }
 
 //======================================================================================//
 //                                OLED PRINT                                            //
 //@brief:  Using pointer to Print string
+//@para:   *message
+//          *page number
+//          *init_or_not
 //@Note:   Ready to Call on main.c (all initialization INCLUDED )
+//          The first time call need to init
+//          --> So we can print Multi-line(page) with different value
 //======================================================================================//
-void oled_display(char *message) {
+void oled_print(char *message, page_address page_num, multiple_line init_or_not) {
 
-  // Hardware init + Table inti
-  config_oled_pin();
-  SPI_oled_initialization();
-  char_array_table();
+  if (init_or_not) {
+    // Hardware init + Table inti
+    config_oled_pin();
+    SPI_oled_initialization();
+    char_array_table();
 
-  oled_CS();
-  panel_init();
-  // Require This to initial al Pixel
-  oled_clear();
-  oled_update();
+    oled_CS();
+    panel_init();
+    // Require This to initial al Pixel
+    oled_clear();
+    oled_update();
 
-  // Use Lookup Table to search char and Display
-  display_char(message);
+    // Select Row [7 <-> 0]
+    new_line(page_num);
 
-  oled_DS();
+    // Use Lookup Table to search char and Display
+    display_char(message);
+    oled_DS();
+  } else {
+    oled_CS();
+
+    // Select Row [7 <-> 0]
+    new_line(page_num);
+
+    // Use Lookup Table to search char and Display
+    display_char(message);
+    oled_DS();
+  }
 }
 
 //======================================================================================//
 //                                LOOK UP CHAR ARRAY                                    //
 //
 //======================================================================================//
+
 static function_pointer_char char_callback[127]; // ASCII-128 Slot
 
 //======================================================================================//
@@ -320,9 +377,10 @@ void display_char(char *string) {
   oled_CS();
   oled_setD_bus();
   for (int i = 0; i < strlen(string); i++) {
-
-    function_pointer_char lcd_display = char_callback[(int)(string[i])]; // Create + assign
-    lcd_display();                                                       // Display
+    /* Create + assign */
+    function_pointer_char lcd_display = char_callback[(int)(string[i])];
+    /* Display */
+    lcd_display();
   }
 }
 
