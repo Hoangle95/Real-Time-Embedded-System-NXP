@@ -27,7 +27,7 @@
 // 2. Create Consumer task
 // 3. Create main with 2 task
 // -------------------------------------------------------------------------- //
-/*
+//
 //
 //========================Sample code to WRITE/READ a file to the SD Card=====================================
 //1. Open file or Create file using f_open
@@ -104,7 +104,7 @@ int main(void) {
 //3. Write COnsumer task
 //4. Write Watchdog task which is check if the task complete on producer task and consumer task                      */
 // -------------------------------------------------------------------------- //
-/*
+
 #include "event_groups.h"
 EventGroupHandle_t test;
 QueueHandle_t dog;
@@ -173,7 +173,7 @@ void main(void) {
   dog = xQueueCreate(1, sizeof(int));
   vTaskStartScheduler();
 }
-*/
+
 // -------------------------------------------------------------------------- //
 //                           PART 1 : Advance                                 //
 // -------------------------------------------------------------------------- //
@@ -183,21 +183,22 @@ void main(void) {
 // 1. create sample array of 100 samples
 // 2. We only need to grab 1 of these x, y, or z and average of it
 // -------------------------------------------------------------------------- //
-// typedef struct {
-//   acceleration__axis_data_s sample[100];
-//   double sum_y;
-//   double avg_y;
-// } data;
+typedef struct {
+  acceleration__axis_data_s sample[100];
+  double sum_y;
+  double avg_y;
+} data;
 
-// static QueueHandle_t sensor_queue;
-// static EventGroupHandle_t WatchDog;
-// static TickType_t counting; // Create a counting object to keep track of counting
-// // Create a counting object to keep track of both task healthy(dog_counter1), Consumer, Producer error (dog_counter2)
-// static TickType_t dog_counter1, dog_counter2;
+static QueueHandle_t sensor_queue;
+static EventGroupHandle_t WatchDog;
+static TickType_t counting; // Create a counting object to keep track of counting
+// Create a counting object to keep track of both task healthy(dog_counter1), Consumer, Producer error (dog_counter2)
+static TickType_t dog_counter1, dog_counter2;
 
-// uint8_t producer = 0x01; // xEventGroupSetBits
-// uint8_t consumer = 0x02; // xEventGroupSetBits
-// uint8_t verified = 0x03; // xEventGroupWaitBits
+uint8_t producer = 0x01; // xEventGroupSetBits
+uint8_t consumer = 0x02; // xEventGroupSetBits
+uint8_t verified = 0x03; // xEventGroupWaitBits
+
 // -------------------------------------------------------------------------- //
 //                           SEND                                         //
 // -------------------------------------------------------------------------- //
@@ -215,23 +216,24 @@ void main(void) {
 // 3. Read(save) data sensor into array using for loop
 // 4. Calculate average value
 // 5. Send average value in xQueueSend()
-// static void producer_task(void *P) {
-//   /*Initialize sensor*/
-//   printf("Sensor Status: %s\n", acceleration__init() ? "Ready" : "Not Ready"); // Check sensor status
-//   data data1;                                                                  // Review how to declare a struct
-//   while (1) {
-//     for (int i = 0; i < 100; i++) {
-//       data1.sample[i] = acceleration__get_data();
-//       data1.sum_y += data1.sample[i].y;
-//     }
-//     data1.avg_y = data1.sum_y / 100;
-//     printf("Queue: %s\n", xQueueSend(sensor_queue, &data1.avg_y, 0) ? "T" : "F");
-//     xEventGroupSetBits(WatchDog, producer);
-//     data1.sum_y = 0.000; // Reset data sum to 0 to avoid data keep adding up
 
-//     vTaskDelay(100); // Writing process fast for 0.1s
-//   }
-// }
+static void producer_task(void *P) {
+  /*Initialize sensor*/
+  printf("Sensor Status: %s\n", acceleration__init() ? "Ready" : "Not Ready"); // Check sensor status
+  data data1;                                                                  // Review how to declare a struct
+  while (1) {
+    for (int i = 0; i < 100; i++) {
+      data1.sample[i] = acceleration__get_data();
+      data1.sum_y += data1.sample[i].y;
+    }
+    data1.avg_y = data1.sum_y / 100;
+    printf("Queue: %s\n", xQueueSend(sensor_queue, &data1.avg_y, 0) ? "T" : "F");
+    xEventGroupSetBits(WatchDog, producer);
+    data1.sum_y = 0.000; // Reset data sum to 0 to avoid data keep adding up
+
+    vTaskDelay(100); // Writing process fast for 0.1s
+  }
+}
 // -------------------------------------------------------------------------- //
 //                           RECEIVE                                         //
 // -------------------------------------------------------------------------- //
@@ -242,104 +244,105 @@ void main(void) {
 // 4. Write data from string to address of file using strlen(string) and f_write
 // 5. Synchronize the data process at the moment
 // 6. Print out data to the screen
-// static void consumer_task(void *P) {
 
-//   const char *filename = "file.txt";
-//   FIL file;
-//   UINT bytes_written = 0;
-//   // File Open IF exist file or Create IF NOT exist
-//   FRESULT open_file = f_open(&file, filename, (FA_WRITE | FA_CREATE_ALWAYS));
-//   static char string[64]; // Manualy set up array string
+static void consumer_task(void *P) {
 
-//   double receive;
-//   while (1) {
-//     if (xQueueReceive(sensor_queue, &receive, portMAX_DELAY)) {
-//       // Check if open_file succeed which FR_OK is API succeed
-//       if (FR_OK == open_file) {
-//         counting = xTaskGetTickCount();                               // Keep track Counting Time execution
-//         sprintf(string, "%li mS <-> Avg: %.2f\n", counting, receive); // put string value into array
-//         if (FR_OK == f_write(&file, string, strlen(string), &bytes_written)) {
-//           f_sync(&file); // Synchronize and save the process of data at the moment
-//         }
-//       }
-//     }
-//     printf("%li mS <-> Avg: %.2f\n", counting, receive);
-//     xEventGroupSetBits(WatchDog, consumer);
-//   }
-// }
+  const char *filename = "file.txt";
+  FIL file;
+  UINT bytes_written = 0;
+  // File Open IF exist file or Create IF NOT exist
+  FRESULT open_file = f_open(&file, filename, (FA_WRITE | FA_CREATE_ALWAYS));
+  static char string[64]; // Manualy set up array string
+
+  double receive;
+  while (1) {
+    if (xQueueReceive(sensor_queue, &receive, portMAX_DELAY)) {
+      // Check if open_file succeed which FR_OK is API succeed
+      if (FR_OK == open_file) {
+        counting = xTaskGetTickCount();                               // Keep track Counting Time execution
+        sprintf(string, "%li mS <-> Avg: %.2f\n", counting, receive); // put string value into array
+        if (FR_OK == f_write(&file, string, strlen(string), &bytes_written)) {
+          f_sync(&file); // Synchronize and save the process of data at the moment
+        }
+      }
+    }
+    printf("%li mS <-> Avg: %.2f\n", counting, receive);
+    xEventGroupSetBits(WatchDog, consumer);
+  }
+}
 // -------------------------------------------------------------------------- //
 //                           WATCHDOG                                         //
 // The purpose of watchdog :
 // 1. is to verify task running succesfully
 // 2. is to write the test case for tasks
 // -------------------------------------------------------------------------- //
-// void Watchdog_task(void *P) {
+void Watchdog_task(void *P) {
 
-//   const char *filename1 = "watch_dog.txt";
-//   FIL file;
-//   UINT bytes_written = 0;
-//   FRESULT open_file = f_open(&file, filename1, (FA_WRITE | FA_CREATE_ALWAYS));
+  const char *filename1 = "watch_dog.txt";
+  FIL file;
+  UINT bytes_written = 0;
+  FRESULT open_file = f_open(&file, filename1, (FA_WRITE | FA_CREATE_ALWAYS));
 
-//   while (1) {
-//     uint8_t expected_value = xEventGroupWaitBits(WatchDog, verified, pdTRUE, pdTRUE, 2000);
-//     printf("WatchDog verify: %s\tReturn_Value: %d \n\n ", (expected_value == verified) ? "T" : "F", expected_value);
+  while (1) {
+    uint8_t expected_value = xEventGroupWaitBits(WatchDog, verified, pdTRUE, pdTRUE, 2000);
+    printf("WatchDog verify: %s\tReturn_Value: %d \n\n ", (expected_value == verified) ? "T" : "F", expected_value);
 
-//     // ---------------------------- BOTH TASK HEALTHY ---------------------------
-//     if ((expected_value == verified)) {
-//       printf("Both Task Healthy\n");
-//       if (FR_OK == open_file) {
-//         static char string[64];
-//         dog_counter1 = xTaskGetTickCount();
-//         sprintf(string, "Verified at time: %ldmS\n", dog_counter1);
-//         if (FR_OK == f_write(&file, string, strlen(string), &bytes_written)) {
-//           f_sync(&file);
-//         }
-//       }
-//     }
-//     //----------------------------- CONSUMER ERROR -----------------------------
-//     else if (expected_value == 0x04) {
-//       printf("C_Task Suspend\n");
-//       if (FR_OK == open_file) {
-//         static char string[64];
-//         dog_counter2 = xTaskGetTickCount();
-//         sprintf(string, "Consumer Error at time: %ldmS\n ", dog_counter2);
-//         if (FR_OK == f_write(&file, string, strlen(string), &bytes_written)) {
-//           f_sync(&file);
-//         }
-//       }
-//     }
-//     //----------------------------- PRODUCER ERROR -----------------------------
-//     else {
-//       printf("P_Task Suspend\n");
-//       if (FR_OK == open_file) {
-//         static char string[64];
-//         dog_counter2 = xTaskGetTickCount();
-//         sprintf(string, "Producer Error at time: %ldmS\n ", dog_counter2);
-//         if (FR_OK == f_write(&file, string, strlen(string), &bytes_written)) {
-//           f_sync(&file);
-//         } else {
-//           printf("ERROR: Failed to write data to file\n");
-//         }
-//       } else {
-//         printf("ERROR: Failed to open: %s\n", filename1);
-//       }
-//     }
-//   }
-// }
-// int main(void) {
+    // ---------------------------- BOTH TASK HEALTHY ---------------------------
+    if ((expected_value == verified)) {
+      printf("Both Task Healthy\n");
+      if (FR_OK == open_file) {
+        static char string[64];
+        dog_counter1 = xTaskGetTickCount();
+        sprintf(string, "Verified at time: %ldmS\n", dog_counter1);
+        if (FR_OK == f_write(&file, string, strlen(string), &bytes_written)) {
+          f_sync(&file);
+        }
+      }
+    }
+    //----------------------------- CONSUMER ERROR -----------------------------
+    else if (expected_value == 0x04) {
+      printf("C_Task Suspend\n");
+      if (FR_OK == open_file) {
+        static char string[64];
+        dog_counter2 = xTaskGetTickCount();
+        sprintf(string, "Consumer Error at time: %ldmS\n ", dog_counter2);
+        if (FR_OK == f_write(&file, string, strlen(string), &bytes_written)) {
+          f_sync(&file);
+        }
+      }
+    }
+    //----------------------------- PRODUCER ERROR -----------------------------
+    else {
+      printf("P_Task Suspend\n");
+      if (FR_OK == open_file) {
+        static char string[64];
+        dog_counter2 = xTaskGetTickCount();
+        sprintf(string, "Producer Error at time: %ldmS\n ", dog_counter2);
+        if (FR_OK == f_write(&file, string, strlen(string), &bytes_written)) {
+          f_sync(&file);
+        } else {
+          printf("ERROR: Failed to write data to file\n");
+        }
+      } else {
+        printf("ERROR: Failed to open: %s\n", filename1);
+      }
+    }
+  }
+}
+int main(void) {
 
-//   //----------------------------- Initialization -----------------------------
-//   puts("Starting RTOS\n");
-//   sj2_cli__init();
+  //----------------------------- Initialization -----------------------------
+  puts("Starting RTOS\n");
+  sj2_cli__init();
 
-//   //--------------------------- Written to SD card ---------------------------
-//   sensor_queue = xQueueCreate(1, sizeof(double));
-//   WatchDog = xEventGroupCreate();
-//   xTaskCreate(producer_task, "producer", 2048 / sizeof(void *), NULL, PRIORITY_MEDIUM, NULL);
-//   xTaskCreate(consumer_task, "consumer", 2048 / sizeof(void *), NULL, PRIORITY_MEDIUM, NULL);
-//   xTaskCreate(Watchdog_task, "Watchdog", 2048 / sizeof(void *), NULL, PRIORITY_HIGH, NULL);
+  //--------------------------- Written to SD card ---------------------------
+  sensor_queue = xQueueCreate(1, sizeof(double));
+  WatchDog = xEventGroupCreate();
+  xTaskCreate(producer_task, "producer", 2048 / sizeof(void *), NULL, PRIORITY_MEDIUM, NULL);
+  xTaskCreate(consumer_task, "consumer", 2048 / sizeof(void *), NULL, PRIORITY_MEDIUM, NULL);
+  xTaskCreate(Watchdog_task, "Watchdog", 2048 / sizeof(void *), NULL, PRIORITY_HIGH, NULL);
 
-//   vTaskStartScheduler(); // This function never returns unless RTOS scheduler runs out of memory and fails
+  vTaskStartScheduler(); // This function never returns unless RTOS scheduler runs out of memory and fails
 
-//   return 0;
-// }
+  return 0;
+}

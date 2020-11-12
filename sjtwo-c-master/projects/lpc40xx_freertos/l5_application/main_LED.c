@@ -14,25 +14,25 @@
 // Goal: Part_0 is blink LED task on LED_3
 //======================================================================================//
 
-// void led_task(void *pvParameters) {
-//   // Choose one of the onboard LEDS by looking into schematics and write code for the below
+void led_task(void *pvParameters) {
+  // Choose one of the onboard LEDS by looking into schematics and write code for the below
 
-//   LPC_IOCON->P1_18 &= ~(0b111); //0) Set the IOCON MUX function select pins to 000
-//   LPC_GPIO1->DIR |= (1 << 18); //1) Set the DIR register bit for the LED port pin
-//   while (true) {
-//     vTaskDelay(500);
-//     LPC_GPIO1->PIN &= ~(1 << 18); //2) Set PIN register bit to 0 to turn ON LED (led may be active low)
-//     vTaskDelay(500);
-//     LPC_GPIO1->PIN |= (1 << 18); //3) Set PIN register bit to 1 to turn OFF LED
-//   }
-// }
+  LPC_IOCON->P1_18 &= ~(0b111); //0) Set the IOCON MUX function select pins to 000
+  LPC_GPIO1->DIR |= (1 << 18); //1) Set the DIR register bit for the LED port pin
+  while (true) {
+    vTaskDelay(500);
+    LPC_GPIO1->PIN &= ~(1 << 18); //2) Set PIN register bit to 0 to turn ON LED (led may be active low)
+    vTaskDelay(500);
+    LPC_GPIO1->PIN |= (1 << 18); //3) Set PIN register bit to 1 to turn OFF LED
+  }
+}
 
-// int main(void) {
-//   // Create FreeRTOS LED task
-//   xTaskCreate(led_task, "led", 2048 / sizeof(void *), NULL, PRIORITY_LOW, NULL);
-//   vTaskStartScheduler();
-//   return 0;
-// }
+int main(void) {
+  // Create FreeRTOS LED task
+  xTaskCreate(led_task, "led", 2048 / sizeof(void *), NULL, PRIORITY_LOW, NULL);
+  vTaskStartScheduler();
+  return 0;
+}
 
 //======================================================================================//
 //                                Part_2                                                //
@@ -92,15 +92,15 @@ void switch_task(void *task_parameter) {
   }
 }
 
-// int main(void) {
-//   switch_press_indication = xSemaphoreCreateBinary();
-//   static port_pin_s SW = {1, 19};
-//   static port_pin_s led = {{1, 2}, {18, 24, 26, 3}};
-//   // static port_pin_s led = {{1, 18}, {1, 24}, {1, 26}, {2, 3}};
-//   // static port_pin_s led = {2, 3};
+int main(void) {
+  switch_press_indication = xSemaphoreCreateBinary();
+  static port_pin_s SW = {1, 19};
+  static port_pin_s led = {{1, 2}, {18, 24, 26, 3}};
+  // static port_pin_s led = {{1, 18}, {1, 24}, {1, 26}, {2, 3}};
+  // static port_pin_s led = {2, 3};
 
-//   xTaskCreate(led_task, "led_task", 2048 / sizeof(void *), &led, 1, NULL);
-//   xTaskCreate(switch_task, "switch_task", 2048 / sizeof(void *), &SW, 1, NULL);
-//   vTaskStartScheduler();
-//   return 0;
-// }
+  xTaskCreate(led_task, "led_task", 2048 / sizeof(void *), &led, 1, NULL);
+  xTaskCreate(switch_task, "switch_task", 2048 / sizeof(void *), &SW, 1, NULL);
+  vTaskStartScheduler();
+  return 0;
+}

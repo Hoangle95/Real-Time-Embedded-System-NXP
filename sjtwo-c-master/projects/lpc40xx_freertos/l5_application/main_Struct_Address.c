@@ -20,22 +20,22 @@ typedef struct __attribute__((packed)) my_s_packed {
   char c2;
 } my_s_packed;
 
-// int main(void) {
+int main(void) {
 
-//   // TODO : Instantiate a structure type my_s with the name of "s"
-//   my_s s;
-//   my_s_packed v;
-//   printf("Size : %d bytes\n"
-//          "floats 0x%p 0x%p\n"
-//          "chars  0x%p 0x%p\n",
-//          sizeof(s), &s.f1, &s.f2, &s.c1, &s.c2);
-//   printf("Size : %d bytes\n"
-//          "floats 0x%p 0x%p\n"
-//          "chars  0x%p 0x%p\n",
-//          sizeof(v), &v.f1, &v.f2, &v.c1, &v.c2);
+  // TODO : Instantiate a structure type my_s with the name of "s"
+  my_s s;
+  my_s_packed v;
+  printf("Size : %d bytes\n"
+         "floats 0x%p 0x%p\n"
+         "chars  0x%p 0x%p\n",
+         sizeof(s), &s.f1, &s.f2, &s.c1, &s.c2);
+  printf("Size : %d bytes\n"
+         "floats 0x%p 0x%p\n"
+         "chars  0x%p 0x%p\n",
+         sizeof(v), &v.f1, &v.f2, &v.c1, &v.c2);
 
-//   puts("Starting RTOS");
-//   vTaskStartScheduler(); // This function never returns unless RTOS scheduler runs out of memory and fails
+  puts("Starting RTOS");
+  vTaskStartScheduler(); // This function never returns unless RTOS scheduler runs out of memory and fails
 
-//   return 0;
-// }
+  return 0;
+}

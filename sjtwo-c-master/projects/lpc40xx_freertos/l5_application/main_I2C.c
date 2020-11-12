@@ -81,16 +81,16 @@ void Task_XZ(void *P) {
 
 /******************************** MAIN LOOP **********************************
 ******************************************************************************/
-// int main(void) {
+int main(void) {
 
-//   /* ----------------------------- Initialization ----------------------------- */
-//   puts("Starting RTOS\n");
-//   sj2_cli__init();
-//   i2c1__slave_init(0x86);
+  /* ----------------------------- Initialization ----------------------------- */
+  puts("Starting RTOS\n");
+  sj2_cli__init();
+  i2c1__slave_init(0x86);
 
-//   // xTaskCreate(Task_XZ, "XZ Position", 2048 / sizeof(void *), NULL, 1, NULL);
+  // xTaskCreate(Task_XZ, "XZ Position", 2048 / sizeof(void *), NULL, 1, NULL);
 
-//   vTaskStartScheduler();
-//   /* This function never returns unless RTOS scheduler runs out of memory and fails */
-//   return 0;
-// }
+  vTaskStartScheduler();
+  /* This function never returns unless RTOS scheduler runs out of memory and fails */
+  return 0;
+}

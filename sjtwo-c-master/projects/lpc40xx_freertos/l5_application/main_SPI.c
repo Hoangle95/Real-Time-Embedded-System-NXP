@@ -20,7 +20,7 @@
 /*
 ==============================================Part_0===========================================
 */
-/*
+
 #include <stdint.h>
 
 void ssp2__init();
@@ -45,7 +45,7 @@ int main(void) {
   puts("star RTOS");
   return 0;
 }
-*/
+
 /*
 ========================================Part_1============================================
 */
@@ -85,17 +85,17 @@ void spi_task(void *p) {
     vTaskDelay(500);
   }
 }
-// int main(void) {
-//   puts("start RTOS");
-//   xTaskCreate(spi_task, "spi", 1024 / sizeof(void *), NULL, 1, NULL);
-//   vTaskStartScheduler();
-//   return 0;
-// }
+int main(void) {
+  puts("start RTOS");
+  xTaskCreate(spi_task, "spi", 1024 / sizeof(void *), NULL, 1, NULL);
+  vTaskStartScheduler();
+  return 0;
+}
 
 /*
 ======================================================Part_2================================================
 */
-/*
+
 #include "FreeRTOS.h"
 #include "ssp2.h"
 #include "task.h"
@@ -165,7 +165,7 @@ int main(void) {
   vTaskStartScheduler();
   return 0;
 }
-*/
+
 /**
  * Adesto flash asks to send 24-bit address
  * We can use our usual uint32_t to store the address
@@ -175,7 +175,7 @@ int main(void) {
 /*
 ==========================================Part_3=============================
 */
-/*
+
 void task_extra_credit(void *p) {
   while (1) {
     uint8_t temp[256];
@@ -205,7 +205,7 @@ int main(void) {
   vTaskStartScheduler();
   return 0;
 }
-*/
+
 /*
 static void task_extra_credit(void *p);
 void task_extra_credit(void *p) {
