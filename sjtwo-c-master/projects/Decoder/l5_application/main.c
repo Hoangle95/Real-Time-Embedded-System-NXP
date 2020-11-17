@@ -35,17 +35,16 @@ QueueHandle_t Q_songdata;  // reader_Task --> player_Task
 typedef char trackname_t[64]; // 64 songs can be store
 typedef char songdata_t[512]; // 512 bytes idealy
 
-
 //======================================================================================//
 //                                MP3 Reader Task                                       //
-//Goal : Receive Q_trackname from CLI and reader the trackname in SD card,
+// Goal : Receive Q_trackname from CLI and reader the trackname in SD card,
 //       Then send Q_songdata over to play task
-//brief: Receive song_name(Queue track_name) <--CLI input <handler_general.c>
+// brief: Receive song_name(Queue track_name) <--CLI input <handler_general.c>
 //          Open file = song_name
 //          Read file --> Store in buffer[size512]
 //          Send it to player_task(Queue songdata)
 //          Close file
-//note:  There are two Queues involved
+// note:  There are two Queues involved
 //          ---> QueueHandle_t Q_trackname;
 //          ---> QueueHandle_t Q_songdata;
 //          All use PortMax_delay to sleep and wait to wakeup
@@ -84,8 +83,6 @@ static void mp3_reader_task(void *p) {
     }
   }
 }
-
-
 
 //======================================================================================//
 //                                MP3 Player Task                                       //
