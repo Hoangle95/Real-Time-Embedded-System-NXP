@@ -40,3 +40,5 @@ We wanted to build a strong foundational sample project for SJ-2 development boa
 The code may appear less fancy, but it is simple to understand and traceable with minimal abstractions. The goal is to avoid designing yet another Arduino platform. There is no such thing as magic in the field of firmware engineering.
 
 ---
+
+updated 11/18/2020
