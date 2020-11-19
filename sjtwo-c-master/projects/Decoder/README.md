@@ -14,10 +14,12 @@
    - MP3_player_task: RECEIVE from reader_task (Queue Song_data) --> TRANSMIT through VS1053(SPI_0)
 4. Audio should not sound distorted, slower or faster when running on your system )
 
-- L3-Driver [Decoder Header](mp3_decoder/l3_drivers/decoder_mp3.h)
-
-- L3-Driver [Decoder Source](mp3_decoder/l3_drivers/sources/decoder_mp3.c)
-- L5-Application [main](mp3_decoder/l5_application/main.c)
+- L3-Driver [Decoder Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Decoder/l3_drivers/decoder_mp3.h)
+- L3-Driver [Decoder Source](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Decoder/l3_drivers/sources/decoder_mp3.c)
+- L5-Application [main](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Decoder/l5_application/main.c)
+- L4-IO-CLI [handler_general.c](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Decoder/l4_io/cli/handlers/handlers_general.c)
+- L4-IO-CLI [sj2_cli.c](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Decoder/l4_io/cli/sj2_cli.c)
+- L4-IO-CLI [cli_handler.h](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Decoder/l4_io/cli/cli_handlers.h)
 
 ```
 # Compile Command:

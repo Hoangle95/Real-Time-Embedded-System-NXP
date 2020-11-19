@@ -28,11 +28,11 @@ python nxp-programmer/flash.py --input _build_Oled/Oled.bin
 2. Use implemented driver to sense input signals and control LEDs.
 3. Use FreeRTOS binary semaphore to signal between tasks.
 
-- L3-Driver [GPIO Header](projects/lpc40xx_freertos/l3_drivers/gpio_lab.h).
+- L3-Driver [GPIO Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/gpio_lab.h).
 
 - L3-Driver [GPIO Source](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/sources/gpio_lab.c).
 
-- L5-Application [main](projects/lpc40xx_freertos/l5_application/main_LED.c)
+- L5-Application [main](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l5_application/main_LED.c)
 
 ## Lab5: Interrupt Semaphore : GPIO Interrupt - Dynamic User Defined ISR Callback Driver
 
@@ -51,11 +51,11 @@ python nxp-programmer/flash.py --input _build_Oled/Oled.bin
    - These port/pin interrupts are actually OR'd together and use a single CPU interrupt.
    - On the SJ2 board, GPIO interrupts are handled by a dedicated GPIO interrupt (exception number 54)
 
-- L3-Driver [GPIO ISR Header](lab3/l3_drivers/gpio_isr.h).
+- L3-Driver [GPIO ISR Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/gpio_isr.h).
 
-- L3-Driver [GPIO ISR Source](lab3/l3_drivers/sources/gpio_isr.c).
+- L3-Driver [GPIO ISR Source](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/sources/gpio_isr.c).
 
-- L5-Application [main](lab3/l5_application/main.c)
+- L5-Application [main](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l5_application/main_Interrup_Binary_Semaphore.c)
 
 ## Lab6: ADC Driver + PWM Driver + FreeRTOS Queue
 
@@ -74,11 +74,11 @@ Improve an ADC driver, and use an existing PWM driver to design and implement an
 3. FreeRTOS Tasks
    - Use FreeRTOS queues to communicate between ADC_Task and PWM_Task
 
-- L3-Driver [ADC Header](lab4/l3_drivers/adc.h) [PWM Header](lab4/l3_drivers/pwm1.h).
+- L3-Driver [ADC Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/adc.h) [PWM Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/pwm1.h).
 
-- L3-Driver [ADC Source](lab4/l3_drivers/sources/adc.c) [PWM Source](lab4/l3_drivers/sources/pwm1.c).
+- L3-Driver [ADC Source](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/sources/adc.c) [PWM Source](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/sources/pwm1.c).
 
-- L5-Application [main](lab4/l5_application/main.c)
+- L5-Application [main](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l5_application/main_ADC_PWM.c)
 
 ## Lab7: SPI Flash Interface
 
@@ -95,10 +95,10 @@ The objective is to learn how to create a thread-safe driver for Synchronous Ser
 2. Mutex Thread-Safe example
    - attempt to read Adesto flash manufacturer ID in two tasks simultaneously using Mutex
 
-- L3-Driver [SPI Header](lab5/l3_drivers/ssp2_lab.h)
+- L3-Driver [SPI Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/ssp2_lab.h)
 
-- L3-Driver [SPI Source](lab5/l3_drivers/sources/ssp2_lab.c)
-- L5-Application [main](lab5/l5_application/main.c)
+- L3-Driver [SPI Source](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/sources/ssp2_lab.c)
+- L5-Application [main](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l5_application/main_SPI.c)
 
 ## Lab8: Universal Asynchronous Receiver-Transmitter (UART)
 
@@ -116,10 +116,10 @@ The objective is to learn how to create a thread-safe driver for Synchronous Ser
    - Interrupts by setting up an interrupt on [receive](http://books.socialledge.com/link/90#bkmrk-to-learn-how-to-comm).
    - FreeRTOS Queue and String manipulation.
 
-- L3-Driver [UART Header](lab6/l3_drivers/uart_lab.h)
+- L3-Driver [UART Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/uart_lab.h)
 
-- L3-Driver [UART Source](lab6/l3_drivers/sources/uart_lab.c)
-- L5-Application [main](lab6/l5_application/main.c)
+- L3-Driver [UART Source](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/sources/uart_lab.c)
+- L5-Application [main](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l5_application/main_UART.c)
 
 ## Lab9: FreeRTOS Producer Consumer Tasks (Cooperative Context Switch)
 
@@ -136,6 +136,9 @@ Queues' API can also perform context switches, but this is a type of Cooperative
 3. An extra part on how to create [CLI command](http://books.socialledge.com/books/embedded-drivers-real-time-operating-systems/page/sj2-board#bkmrk-cli-commands) to control the Task
 
 - L5-Application [main](lab7/l5_application/main.c)
+- L4-IO-CLI [handler_general.c](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Decoder/l4_io/cli/handlers/handlers_general.c)
+- L4-IO-CLI [sj2_cli.c](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Decoder/l4_io/cli/sj2_cli.c)
+- L4-IO-CLI [cli_handler.h](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Decoder/l4_io/cli/cli_handlers.h)
 
 ## Lab10: Develop a Software Watchdog through FreeRTOS EventGroup API
 
@@ -171,12 +174,12 @@ I2C**1: SDA = P0_0 SCL = P0_1 (Slave)
    - The I2C Slave should be detect by Master (I2C\_\_2 ) with any 8-bits assigned address
    - The I2C Slave should be able to perform single byte or multi-bytes transaction(R/W)
 
-- L3-Driver [Master Header](lab9/l3_drivers/i2c.h)
-- L3-Driver [Slave Header](lab9/l3_drivers/i2c_slave.h)
+- L3-Driver [Master Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/i2c.h)
+- L3-Driver [Slave Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/i2c_slave.h)
 
-- L3-Driver [Master Source](lab9/l3_drivers/sources/i2c.c)
-- L3-Driver [Slave Source](lab9/l3_drivers/sources/i2c_slave.c)
-- L5-Application [main](lab9/l5_application/main.c)
+- L3-Driver [Master Source](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/sources/i2c.c)
+- L3-Driver [Slave Source](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/sources/i2c_slave.c)
+- L5-Application [main](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l5_application/main_I2C.c)
 
 ## lpc40xx_freertos
 

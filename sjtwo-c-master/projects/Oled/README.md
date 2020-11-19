@@ -21,10 +21,10 @@ There are many sample drivers for this OLED Display. Most of them are based on t
     - How Data can transfer from MCU to 1KB GDDRAM.
     - How Data Byte convert to pixels.
 
-- L3-Driver [OLED Header](oled/l3_drivers/oled.h)
+- L3-Driver [OLED Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Oled/l3_drivers/oled.h)
 
-- L3-Driver [OLED Source](oled/l3_drivers/sources/oled.c)
-- L5-Application [main](oled/l5_application/main.c)
+- L3-Driver [OLED Source](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Oled/l3_drivers/sources/oled.c)
+- L5-Application [main](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Oled/l5_application/main.c)
 
 ```
 # Compile Command:
