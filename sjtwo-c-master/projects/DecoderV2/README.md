@@ -1,16 +1,18 @@
 ## MP3 Project: Develop VS1053b (SPI) MIDI Audio Codec Circuit
 
 ![image](https://user-images.githubusercontent.com/38081550/97953088-5e363000-1d54-11eb-8272-0d227433ceaf.png)
-![image](https://user-images.githubusercontent.com/38081550/97952012-e9152b80-1d50-11eb-9854-d748d2d60bc8.png)
-![image](https://user-images.githubusercontent.com/38081550/97953356-106df780-1d55-11eb-9d8f-08fd07f97da2.png)
 
 ### OBJECTIVE
 
-1. Play next song in reader task, when br(read byte) is 0 then there is no data of song, play next to play first song
-2. Using Binary Semaphore for next song instead of Mutex because we want to go to the next song , but not loop back
-   a) SemaphoreGive(play_next) in reader_task
-   b) SemaphoreTake(paly_next) in songcontrol_task
-3. Create play_next_ISR and attach it to function enbale_interrupt() : review gpio_isr.c
+1. Create TaskHandle_t "player_handle" to Suspend(pause) or Resume(resume) a song
+2. Link the "&player_handle" to the last parameter of mp3_player_task to pause_resume_task
+3. Create "pause_resume" binary semaphore to trigger signal
+4. Create pause_resume_ISR and attach it to function enbale_interrupt() : review gpio_isr.c
+5. Create pause_resume_Button task to decide when to suspend and when to resume
+   a) SemaphoreGiveFromISR(pause_resume) in pause_resume_ISR task
+   b) SemaphoreTake(pause_resume) in pause_resume_Button task
+   i) When (pause) is true, suspend task then set pause to false
+   ii) When hit pause again (false value), it runs the else case and resume the task
 
 - L3-Driver [Decoder Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Decoder/l3_drivers/decoder_mp3.h)
 
