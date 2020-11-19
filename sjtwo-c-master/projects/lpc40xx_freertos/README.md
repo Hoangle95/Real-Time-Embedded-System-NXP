@@ -30,7 +30,7 @@ python nxp-programmer/flash.py --input _build_Oled/Oled.bin
 
 - L3-Driver [GPIO Header](projects/lpc40xx_freertos/l3_drivers/gpio_lab.h).
 
-- L3-Driver [GPIO Source](projects/lpc40xx_freertos/l3_drivers/sources/gpio_lab.c).
+- L3-Driver [GPIO Source](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/lpc40xx_freertos/l3_drivers/sources/gpio_lab.c).
 
 - L5-Application [main](projects/lpc40xx_freertos/l5_application/main_LED.c)
 
