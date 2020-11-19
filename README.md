@@ -1,6 +1,7 @@
 # Real-Time-Embedded-System-NXP
 
 ### Semiconductor NXP LPC408x + FreeRTOS firmware + Embedded System (SJSU SJ2 Board)
+All lab are based on [Cmpe146 - SJSU -  Professor Preet Kang](http://books.socialledge.com/books/embedded-drivers-real-time-operating-systems)
 
 All lab are based on [Cmpe146 - SJSU - Professor Preet Kang](http://books.socialledge.com/books/embedded-drivers-real-time-operating-systems)
 
