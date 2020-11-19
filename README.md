@@ -2,6 +2,8 @@
 
 ### Semiconductor NXP LPC408x + FreeRTOS firmware + Embedded System (SJSU SJ2 Board)
 
+All lab are based on [Cmpe146 - SJSU - Professor Preet Kang](http://books.socialledge.com/books/embedded-drivers-real-time-operating-systems)
+
 An `SJ2` board is used at San Jose State University (SJSU) to teach Embedded Systems' courses. Part of this Git repository also includes development environment for not just an ARM controller, but also support to compile and test software on your host machine such as Windows, Mac etc.
 
 <img style="-webkit-user-select: none;margin: auto;cursor: zoom-in;" src="http://socialledge.com/sjsu/images/a/a5/Slide2.png" width="790" height="483">
