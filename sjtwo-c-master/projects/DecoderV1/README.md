@@ -6,13 +6,11 @@
 
 ### OBJECTIVE
 
-1. Develop a working driver for Audio Codec Circuit [VS1053b (SPI)](https://cdn-shop.adafruit.com/datasheets/vs1053.pdf)
-2. Using [File I/O](http://elm-chan.org/fsw/ff/00index_e.html) API to read mp3 SD card though the CLI command in Terminal Emulator
-3. Create --> MP3_reader_task + MP3_player_task <---
-   - Using Queue to transmit payload for cooperative tasks (Reader --> Player)
-   - MP3_reader_task: OPEN_file --> READ_file --> TRANSMIT to player_task (Queue Song_data)
-   - MP3_player_task: RECEIVE from reader_task (Queue Song_data) --> TRANSMIT through VS1053(SPI_0)
-4. Audio should not sound distorted, slower or faster when running on your system )
+1. Play next song in reader task, when br(read byte) is 0 then there is no data of song, play next to play first song
+2. Using Binary Semaphore for next song instead of Mutex because we want to go to the next song , but not loop back
+   a) SemaphoreGive(play_next) in reader_task
+   b) SemaphoreTake(paly_next) in songcontrol_task
+3. Create play_next_ISR and attach it to function enbale_interrupt() : review gpio_isr.c
 
 - L3-Driver [Decoder Header](https://github.com/Hoangle95/Real-Time-Embedded-System-NXP/blob/main/sjtwo-c-master/projects/Decoder/l3_drivers/decoder_mp3.h)
 
