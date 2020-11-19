@@ -1,8 +1,6 @@
 ## MP3 Project: Develop VS1053b (SPI) MIDI Audio Codec Circuit
 
 ![image](https://user-images.githubusercontent.com/38081550/97953088-5e363000-1d54-11eb-8272-0d227433ceaf.png)
-![image](https://user-images.githubusercontent.com/38081550/97952012-e9152b80-1d50-11eb-9854-d748d2d60bc8.png)
-![image](https://user-images.githubusercontent.com/38081550/97953356-106df780-1d55-11eb-9d8f-08fd07f97da2.png)
 
 ### OBJECTIVE
 
