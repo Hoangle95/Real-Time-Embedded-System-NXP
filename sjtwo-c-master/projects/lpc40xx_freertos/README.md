@@ -28,11 +28,11 @@ python nxp-programmer/flash.py --input _build_Oled/Oled.bin
 2. Use implemented driver to sense input signals and control LEDs.
 3. Use FreeRTOS binary semaphore to signal between tasks.
 
-- L3-Driver [GPIO Header](lab2/l3_drivers/gpio_lab.h).
+- L3-Driver [GPIO Header](projects/lpc40xx_freertos/l3_drivers/gpio_lab.h).
 
-- L3-Driver [GPIO Source](lab2/l3_drivers/sources/gpio_lab.c).
+- L3-Driver [GPIO Source](projects/lpc40xx_freertos/l3_drivers/sources/gpio_lab.c).
 
-- L5-Application [main](lab2/l5_application/main.c)
+- L5-Application [main](projects/lpc40xx_freertos/l5_application/main_LED.c)
 
 ## Lab5: Interrupt Semaphore : GPIO Interrupt - Dynamic User Defined ISR Callback Driver
 
