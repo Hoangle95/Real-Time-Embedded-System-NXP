@@ -24,3 +24,5 @@ scons --project=mp3_decoder
 # SJ2 Board Flash Command:
 python nxp-programmer/flash.py --input _build_mp3_decoder/mp3_decoder.bin
 ```
+
+11/21/2020
